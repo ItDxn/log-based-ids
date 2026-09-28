@@ -1,0 +1,12 @@
+# Virtual environment
+.venv/
+
+# Local database (generated data, not source)
+alerts.db
+
+# Generated sample log (regenerate with generate_logs.py)
+sample_auth.log
+
+# Python cache
+__pycache__/
+*.pyc
