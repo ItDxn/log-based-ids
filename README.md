@@ -6,8 +6,7 @@ them on a live web dashboard.
 
 **Status:** actively in development. Core pipeline (log generation → parsing
 → detection → storage → dashboard) is working end to end. Planned next:
-[live auto-refresh on the dashboard / a third detection rule / etc — edit
-this to whatever you're doing next].
+More detection rules, simulating attacks in real-time and live auto-refresh on the dashboard
 
 ## What it does
 
