@@ -19,7 +19,7 @@ def init_db():
     conn.close()
 
 
-#Saving Alert
+#Saving alert
 def save_alert(alert):
     conn = get_connection()
     cursor = conn.cursor()
@@ -28,7 +28,7 @@ def save_alert(alert):
     conn.commit()
     conn.close()
 
-#Retrieving all Alerts
+#Retrieving all alerts
 def get_all_alerts():
     conn = get_connection()
     cursor = conn.cursor()
@@ -37,7 +37,7 @@ def get_all_alerts():
     conn.close()
     return rows
 
-#Retrieving Alerts by IP
+#Retrieving alerts by IP
 def get_alerts_ip(ip):
     conn = get_connection()
     cursor = conn.cursor()

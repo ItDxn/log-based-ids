@@ -1,8 +1,7 @@
 import re
 from datetime import datetime
 
-# This pattern matches both "Failed password" and "Accepted password" lines.
-# The (?P<name>...) parts are "capture groups" -- named slots we pull out.
+# Matching both "Failed password" and "Accepted password" lines
 LOG_PATTERN = re.compile(
     r"(?P<month_day_time>\w{3}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+"
     r"\S+\s+sshd\[\d+\]:\s+"
@@ -17,7 +16,7 @@ def parse_line(line, year=2026):
     if not match:
         return None
 
-    # Log lines don't include the year, so we add it ourselves.
+    # Adding the year
     ts_str = f"{year} {match.group('month_day_time')}"
     timestamp = datetime.strptime(ts_str, "%Y %b %d %H:%M:%S")
 

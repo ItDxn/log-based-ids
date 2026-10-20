@@ -17,17 +17,17 @@ def generate():
     start = datetime(2026, 9, 3, 9, 0, 0)
     t = start
  
-    # --- Normal traffic across the morning ---
+    # === Normal traffic across the morning ===
     for _ in range(15):
-        t += timedelta(minutes=random.randint(2, 20))
+        t += timedelta(hours=random.randint(0,1), minutes=random.randint(2, 20))
         user = random.choice(USERNAMES)
         ip = random.choice(NORMAL_IPS)
         port = random.randint(40000, 60000)
-        # occasionally someone mistypes their password once, then gets in
+        # Mistypes
         if random.random() < 0.2:
-            lines.append(log_line(t, "fail", user, ip, port))
+            lines.append((t, log_line(t, "fail", user, ip, port)))
             t += timedelta(seconds=2)
-        lines.append(log_line(t, "success", user, ip, port))
+        lines.append((t, log_line(t, "success", user, ip, port)))
  
     # === Brute-force Attack ===
     attack_start = start + timedelta(hours=1, minutes=30)
@@ -35,16 +35,37 @@ def generate():
     for _ in range(40):
         t += timedelta(seconds=random.uniform(0.5, 2))
         port = random.randint(40000, 60000)
-        lines.append(log_line(t, "fail", "root", ATTACKER_IP, port))
+        lines.append((t, log_line(t, "fail", "root", ATTACKER_IP, port)))
 
     # === Distributed Attack ===
+    t = start + timedelta(hours=3)
+    target_user = "svc-backup"
+    distributed_ips = [
+        "198.51.100.11", "198.51.100.24", "198.51.100.37",
+        "198.51.100.42", "198.51.100.58", "198.51.100.63",
+    ]
+    for ip in distributed_ips:
+        t += timedelta(minutes=random.randint(3, 8))
+        port = random.randint(40000, 60000)
+        lines.append((t, log_line(t, "fail", target_user, ip, port)))
+        #If IP tries a second time shortly after
+        if random.random() < 0.3:
+            t += timedelta(seconds=random.uniform(5, 15))
+            lines.append((t, log_line(t, "fail", target_user, ip, port)))
+
+    # === Distributed Error Check ===
+    disterror_ips = [
+        "198.52.100.11", "198.52.100.24", "198.52.100.37",
+        "198.52.100.42"
+    ]
+    for ip in disterror_ips:
+        t += timedelta(hours=random.randint(1,3))
+        port = random.randint(40000, 60000)
+        lines.append((t, log_line(t, "fail", "alice", ip, port)))
  
-    # sort everything into time order, like a real log file would be
-    lines_with_time = []
-    for line in lines:
-        lines_with_time.append(line)
- 
-    return lines_with_time
+    # Sort everything into time order, like a real log file would be
+    lines.sort(key=lambda pair: pair[0])
+    return [line for ts, line in lines] 
  
 if __name__ == "__main__":
     lines = generate()

@@ -6,8 +6,7 @@ them on a live web dashboard.
 
 **Status:** actively in development. Core pipeline (log generation → parsing
 → detection → storage → dashboard) is working end to end. Planned next:
-[live auto-refresh on the dashboard / a third detection rule / etc — edit
-this to whatever you're doing next].
+More detection rules, simulating attacks in real-time and live auto-refresh on the dashboard.
 
 ## What it does
 
@@ -54,8 +53,12 @@ dashboard.py         # Flask web dashboard
 ## Known limitations / next steps
 
 - Detection thresholds are fixed constants rather than configurable
-- The distributed-attack rule can flag a legitimate one-off failed login
-  alongside real attack IPs, since it doesn't yet weight by failure count
-  per IP
+
 - No automated tests yet
 - Dashboard does not currently auto-refresh
+
+## Update log
+- 01/10/2026: First commit.
+- 20/10/2026: My first version had no time window, so slow and harmless failures from different 
+devices can look like an attack. I reproduced it in the generator added a sliding window, and verified both cases.
+Also, I updated the generator so the logs generate chronologically because my method before did not work.

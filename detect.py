@@ -1,11 +1,16 @@
 from collections import defaultdict
 from parser import parse_file
 
-FAILURE_THRESHOLD = 5      # flag if this many failures happen...
-WINDOW_SECONDS = 60        # ...within this many seconds
+# Brute force conditions
+BRUTE_FAILURE_THRESHOLD = 5
+BRUTE_WINDOW_SECONDS = 60
+
+# Distributed attack conditions
+DIST_IP_THRESHOLD = 4
+DIST_WINDOW_SECONDS = 3600
 
 
-#Detecting Brute Force Attempts
+#Detecting brute force attempts
 def detect_brute_force(events):
     failures_by_ip = defaultdict(list)
     alerts = []
@@ -18,17 +23,17 @@ def detect_brute_force(events):
         ip = event["ip"]
         ts = event["timestamp"]
 
-        # Add this failure, then drop any that are older than our window
+        # Add failure and drop any older than window
         failures_by_ip[ip].append(ts)
-        cutoff = ts.timestamp() - WINDOW_SECONDS
+        cutoff = ts.timestamp() - BRUTE_WINDOW_SECONDS
         failures_by_ip[ip] = [t for t in failures_by_ip[ip] if t.timestamp() >= cutoff]
 
-        if len(failures_by_ip[ip]) >= FAILURE_THRESHOLD and ip not in already_alerted:
+        if len(failures_by_ip[ip]) >= BRUTE_FAILURE_THRESHOLD and ip not in already_alerted:
             alerts.append({
                 "type": "brute_force",
                 "ip": ip,
                 "count": len(failures_by_ip[ip]),
-                "window_seconds": WINDOW_SECONDS,
+                "window_seconds": BRUTE_WINDOW_SECONDS,
                 "first_seen": failures_by_ip[ip][0],
                 "last_seen": ts,
             })
@@ -37,9 +42,9 @@ def detect_brute_force(events):
     return alerts
 
 
-#Detecting Distributed Attacks
+# Detecting distributed attacks
 def detect_dist_attack(events):
-    ips_by_user = defaultdict(set)
+    failures_by_user = defaultdict(list)
     alerts = []
     already_alerted = set()
 
@@ -51,14 +56,19 @@ def detect_dist_attack(events):
         ip = event["ip"]
         ts = event["timestamp"]
 
-        ips_by_user[user].add(ip)
+        failures_by_user[user].append((ts, ip))
+        cutoff = ts.timestamp() - DIST_WINDOW_SECONDS
+        failures_by_user[user] = [(t, i) for t, i in failures_by_user[user] if t.timestamp() >= cutoff]
 
-        if len(ips_by_user[user]) >= 4 and user not in already_alerted:
+        window = failures_by_user[user]
+        distinct_ips = {i for t, i in window}
+
+        if len(distinct_ips) >= DIST_IP_THRESHOLD and user not in already_alerted:
             alerts.append({
                 "type": "distributed_attack",
-                "ip": ", ".join(ips_by_user[user]),
-                "count": len(ips_by_user[user]),
-                "first_seen": ts,
+                "ip": ", ".join(sorted(distinct_ips)),
+                "count": len(distinct_ips),
+                "first_seen": window[0][0],
                 "last_seen": ts,
             })
             already_alerted.add(user)
