@@ -41,7 +41,7 @@ def get_all_alerts():
 def get_alerts_ip(ip):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM alerts WHERE ip = ?", (ip,))
+    cursor.execute("SELECT * FROM alerts ORDER BY id DESC", (ip,))
     rows = cursor.fetchall()
     conn.close()
     return rows

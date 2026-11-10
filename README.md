@@ -53,12 +53,13 @@ dashboard.py         # Flask web dashboard
 ## Known limitations / next steps
 
 - Detection thresholds are fixed constants rather than configurable
-
 - No automated tests yet
-- Dashboard does not currently auto-refresh
 
 ## Update log
+
 - 01/10/2026: First commit.
 - 20/10/2026: My first version had no time window, so slow and harmless failures from different 
 devices can look like an attack. I reproduced it in the generator added a sliding window, and verified both cases.
 Also, I updated the generator so the logs generate chronologically because my method before did not work.
+- 10/11/2026: Added a simple auto-refresh to the dashboard to allow it to keep updating while new attacks get detected.
+Shown extra columns on the dashboard to give the user more info about the attack.
