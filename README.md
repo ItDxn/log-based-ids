@@ -40,6 +40,13 @@ python3 dashboard.py       # starts the web dashboard
 
 Then open `http://127.0.0.1:5000` in your browser.
 
+## Running the tests
+
+python -m pytest
+
+The tests cover both detection rules, including cases that should *not*
+trigger alerts (slow failures, successful logins, one IP failing repeatedly).
+
 ## Project structure
 
 ```
@@ -63,3 +70,4 @@ devices can look like an attack. I reproduced it in the generator added a slidin
 Also, I updated the generator so the logs generate chronologically because my method before did not work.
 - 10/11/2026: Added a simple auto-refresh to the dashboard to allow it to keep updating while new attacks get detected.
 Shown extra columns on the dashboard to give the user more info about the attack.
+- 15/11/2026: Added pytest tests for both detection rules in detect.py and a requirements.txt file.
