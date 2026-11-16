@@ -1,0 +1,6 @@
+{
+    "brute_force_threshold": 5,
+    "brute_force_window_seconds": 60,
+    "dist_ip_threshold": 4,
+    "dist_window_seconds": 3600
+}

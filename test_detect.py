@@ -44,6 +44,12 @@ def test_brute_force_successful_no_alert():
     alerts = detect_brute_force(events)
     assert len(alerts) == 0
 
+#Tests brute force events for default window against widened window
+def test_brute_force_respects_custom_window():
+    events = [fail("root", "203.0.113.7", i * 300) for i in range(6)]
+    assert len(detect_brute_force(events)) == 0                       
+    assert len(detect_brute_force(events, window_seconds=3600)) == 1
+
 #Tests for one username failing from 5 different IPs minutes apart (should trigger)
 def test_distributed_attack_alert():
     events = [fail("svc-backup", DISTERIOR_IPS[i-1], i * 180) for i in range(5)]
